@@ -5,7 +5,7 @@ import {
   getNoticeById,
   updateNotice,
   deleteNotice,
-} from '../Controllers/notice.controller.js';
+} from '../Controllers/Notice.controller.js';
 import { authMiddleware } from '../../../Middlewares/Authorization.middleware.js';
 
 const router = express.Router();
