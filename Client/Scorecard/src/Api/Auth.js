@@ -1,5 +1,5 @@
 import api from "./Api.js"
-import { store } from "../redux/store.js"
+import { store } from "../Redux/Store.js"
 import { logout } from "../Redux/Slices/AuthSlice.js"
 
 const API_URL = "/api/platform/auth"
