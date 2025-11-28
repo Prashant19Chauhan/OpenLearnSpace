@@ -19,7 +19,6 @@ import {
 import PublishNotice from '../Models/PublishNotice';
 import ViewComplaint from '../Models/ViewComplaint';
 import { noticeList } from '../../Api/communication';
-import { set } from 'mongoose';
 
 const getComplaints = async () => {
   await new Promise((resolve) => setTimeout(resolve, 600));
