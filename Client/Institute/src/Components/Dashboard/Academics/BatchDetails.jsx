@@ -16,7 +16,8 @@ import {
   CheckCircle,
 } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { getBatchDetails } from '../../../Api/Academics';
+import { getBatchDetails, subjectList } from '../../../Api/Academics';
+import AddSubject from '../../Models/AddSubject';
 
 // Mock data
 const mockStudents = [
@@ -106,70 +107,7 @@ const mockTeachers = [
     rating: 4.9,
     subjects: ['Machine Learning', 'Artificial Intelligence'],
   },
-];
-
-const mockSubjects = [
-  {
-    id: 'SUB001',
-    name: 'Data Structures and Algorithms',
-    code: 'CS201',
-    credits: 4,
-    instructor: 'Dr. Sarah Johnson',
-    schedule: 'Mon, Wed, Fri - 10:00 AM',
-    duration: '3 months',
-    status: 'Ongoing',
-    progress: 65,
-    description: 'Fundamental data structures and algorithmic problem solving',
-  },
-  {
-    id: 'SUB002',
-    name: 'Database Management Systems',
-    code: 'CS301',
-    credits: 3,
-    instructor: 'Prof. Michael Chen',
-    schedule: 'Tue, Thu - 2:00 PM',
-    duration: '4 months',
-    status: 'Ongoing',
-    progress: 45,
-    description: 'Design and implementation of database systems',
-  },
-  {
-    id: 'SUB003',
-    name: 'Machine Learning Fundamentals',
-    code: 'CS401',
-    credits: 4,
-    instructor: 'Dr. Emily Rodriguez',
-    schedule: 'Mon, Wed - 3:00 PM',
-    duration: '4 months',
-    status: 'Upcoming',
-    progress: 0,
-    description: 'Introduction to machine learning algorithms and applications',
-  },
-  {
-    id: 'SUB004',
-    name: 'Software Engineering',
-    code: 'CS302',
-    credits: 3,
-    instructor: 'Dr. Sarah Johnson',
-    schedule: 'Tue, Thu - 11:00 AM',
-    duration: '3 months',
-    status: 'Completed',
-    progress: 100,
-    description: 'Software development lifecycle and best practices',
-  },
-  {
-    id: 'SUB005',
-    name: 'Artificial Intelligence',
-    code: 'CS402',
-    credits: 4,
-    instructor: 'Dr. Emily Rodriguez',
-    schedule: 'Fri - 1:00 PM',
-    duration: '5 months',
-    status: 'Upcoming',
-    progress: 0,
-    description: 'AI concepts, search algorithms, and knowledge representation',
-  },
-];
+]; 
 
 const BatchDetail = () => {
   const batchId = useParams();
@@ -179,6 +117,8 @@ const BatchDetail = () => {
   const [expandedTeacher, setExpandedTeacher] = useState(null);
   const [expandedSubject, setExpandedSubject] = useState(null);
   const [batch, setBatchDetails] = useState(null);
+  const [addSubjectPopup, setSubjectPopup] = useState(false);
+  const [mockSubjects, setSubjects] = useState([])
 
   useEffect(() => {
     (async () => {
@@ -190,6 +130,13 @@ const BatchDetail = () => {
         setBatchDetails(response.data);
       } catch (error) {
         console.log(error);
+      }
+
+      try{
+        const response = await subjectList(batchId.batchId, batchId.programId);
+        setSubjects(response.data);
+      }catch(err){
+        console.log(err)
       }
     })();
   }, [batchId.id]);
@@ -264,6 +211,10 @@ const BatchDetail = () => {
       count: mockSubjects.length,
     },
   ];
+
+  const SubjectPopup = () => {
+    setSubjectPopup(true);
+  }
 
   if (!batch)
     return (
@@ -706,7 +657,14 @@ const BatchDetail = () => {
               <h3 className="text-xl font-semibold text-gray-900">
                 Subjects ({mockSubjects.length})
               </h3>
+              <button 
+                className='px-2 py-1 rounded-full text-xs font-medium border'
+                onClick={SubjectPopup}
+              >
+                Add Subject
+              </button>
             </div>
+            {addSubjectPopup && <AddSubject/>}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {mockSubjects.map((subject) => (
                 <div
@@ -721,10 +679,10 @@ const BatchDetail = () => {
                         </div>
                         <div>
                           <h4 className="font-semibold text-gray-900">
-                            {subject.name}
+                            {subject.subjectName}
                           </h4>
                           <p className="text-sm text-gray-500">
-                            {subject.code} • {subject.credits} Credits
+                            {subject.subjectCode} • 3 Credits
                           </p>
                         </div>
                       </div>

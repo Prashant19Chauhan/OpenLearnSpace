@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   X,
   User,
@@ -12,6 +12,7 @@ import {
   Camera,
 } from 'lucide-react';
 import { addStudent } from '../../Api/Student';
+import { getBatchList, programList } from '../../Api/Academics';
 
 function AddStudent({ isOpen, onClose, onAdd }) {
   const [formData, setFormData] = useState({
@@ -29,10 +30,29 @@ function AddStudent({ isOpen, onClose, onAdd }) {
     occupation: '',
     emergencyContact: '',
     image: null,
+    programId: '',
+    batchId: '',
   });
 
   const [imagePreview, setImagePreview] = useState(null);
   const [errors, setErrors] = useState({});
+  const [programs, setPrograms] = useState([]);
+  const [batchs, setBatchs] = useState([]);
+
+  const getPrograms = async() => {
+    const response = await programList();
+    setPrograms(response.data);
+  }
+  const getbatchs = async() => {
+    const response = await getBatchList(formData.programId);
+    setBatchs(response.data);
+  }
+  useEffect(()=>{
+    getPrograms();
+    getbatchs();
+  }, [formData.programId])
+
+  console.log(batchs)
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -139,6 +159,8 @@ function AddStudent({ isOpen, onClose, onAdd }) {
         occupation: '',
         emergencyContact: '',
         image: null,
+        programId: '',
+        batchId: '',
       });
       setImagePreview(null);
       setErrors({});
@@ -346,6 +368,36 @@ function AddStudent({ isOpen, onClose, onAdd }) {
                   {errors.AdmissionDate}
                 </p>
               )}
+            </div>
+
+            {/* program details */}
+            <div>
+              <label>Program Details</label>
+              <select
+                name='programId'
+                value={formData.programId}
+                onChange={handleInputChange}
+              >
+                <option value=''>select program</option>
+                {programs.map((prog)=> (
+                  <option key={prog.programId} value={prog.programId}>{prog.programName}</option>
+                ))}
+              </select>
+            </div>
+
+            {/* batch details */}
+            <div>
+              <label>batch Details</label>
+              <select
+                name='batchId'
+                value={formData.batchId}
+                onChange={handleInputChange}
+              >
+                <option value=''>select batch</option>
+                {batchs.map((batch)=> (
+                  <option key={batch.batchId} value={batch.batchId}>{batch.name}</option>
+                ))}
+              </select>
             </div>
 
             {/* Parent/Guardian Information Section */}

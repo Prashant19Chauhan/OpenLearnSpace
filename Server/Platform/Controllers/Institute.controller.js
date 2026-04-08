@@ -40,7 +40,6 @@ export const enroll = async(req, res, next) => {
       });
 
       newInstitute.users.employees.push(employeeId);
-      await newInstitute.save();
 
       const newEmployee = new InstituteEmployee({
         instituteId: instituteId,
@@ -54,10 +53,9 @@ export const enroll = async(req, res, next) => {
         access: "allowed",
       });
 
+      await newInstitute.save();
       await newEmployee.save();
-
       res.status(201).json({ message: "Institute registered successfully" });
-
     }catch(error){
         return next(errorHandler(500, error.message || "Institute enrollment Failed."))
     }

@@ -1,15 +1,35 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { createSubject } from '../../Api/Academics'; // API function
+import { teacherList } from '../../Api/Teacher';
+import { useParams } from 'react-router-dom';
 
 function AddSubject() {
+  const details = useParams();
   const [formData, setFormData] = useState({
     subjectName: '',
     subjectCode: '',
     subjectDescription: '',
+    teacherId: '',
   });
 
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
+  const [teachers, setTeachers] = useState([]);
+
+  //teacher data fetching
+  const fetchTeacher = async() => {
+    try{
+      const response = await teacherList();
+      setTeachers(response.data);
+    }
+    catch(error){
+      console.log(error);
+    }
+  }
+
+  useEffect(()=>{
+    fetchTeacher();
+  }, [])
 
   // Handle input change
   const handleChange = (e) => {
@@ -27,13 +47,14 @@ function AddSubject() {
     setMessage('');
 
     try {
-      const response = await createSubject(formData); // API call
+      const response = await createSubject(formData, details.batchId, details.programId); // API call
       setMessage('✅ Subject added successfully!');
       console.log('Response:', response);
       setFormData({
         subjectName: '',
         subjectCode: '',
         subjectDescription: '',
+        teacherId: '',
       });
     } catch (error) {
       console.error('Error adding subject:', error);
@@ -86,6 +107,23 @@ function AddSubject() {
             placeholder="Enter subject description"
             rows={3}
           />
+        </div>
+
+        <div>
+          <select
+            name="teacherId"
+            value={formData.teacherId}
+            onChange={handleChange}
+          >
+            <option value="">select teacher</option>
+            {teachers?.map((teacher)=> {
+              return (
+                <option key={teacher.teacherId} value={teacher.teacherId}>
+                  {teacher.name}
+                </option>
+              )
+            })}
+          </select>
         </div>
 
         {/* Submit Button */}

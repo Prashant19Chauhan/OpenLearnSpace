@@ -47,21 +47,16 @@ const batchSchema = new mongoose.Schema({
     default: 0,
     min: [0, "Current enrollment cannot be negative"]
   },
-  subjects: [{
-    subjectId: {
-      type: String,
-      ref: "Subject",
-      required: true
-    },
-    teacherIds: [{
-      type: String,
-      ref: "Teacher"
-    }],
-    isActive: {
-      type: Boolean,
-      default: true
-    }
-  }],
+  subjects: {
+    type: [
+      {
+        subjectId: String,
+        teacherId: String,
+        isActive: Boolean
+      }
+    ],
+    default: []
+  },
   studentIds: [{
     type: String,
     ref: "Student"

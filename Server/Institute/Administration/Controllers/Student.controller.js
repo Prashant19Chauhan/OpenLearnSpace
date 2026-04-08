@@ -27,10 +27,14 @@ export const enrollStudent = async(req, res, next) => {
             parentEmail,
             relation,
             occupation,
-            emergencyContact
+            emergencyContact,
+            programId,
+            batchId,
         } = req.body;
         const imagePath = req.file ? req.file.filename : null;
 
+        console.log(programId)
+        console.log(batchId)
         // Validate required fields
         if (!instituteId || !name || !phoneNumber || !email ||
             !parentName || !parentPhoneNumber || !parentEmail) {
@@ -92,8 +96,12 @@ export const enrollStudent = async(req, res, next) => {
             relation,
             occupation,
             emergencyContact,
-            parentPassword: parentHashPassword
+            parentPassword: parentHashPassword,
+            programIds: [programId],
+            batchIds: [batchId],
         });
+
+        console.log(demo)
 
         await newStudent.save();
 

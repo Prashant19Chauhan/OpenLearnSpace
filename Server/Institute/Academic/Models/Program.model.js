@@ -32,25 +32,16 @@ const programSchema = new mongoose.Schema(
         ref: "Student",
       },
     ],
-    subjects: [
-      {
-        subjectId: {
-          type: String,
-          ref: "Subject",
-          required: true,
-        },
-        teacherIds: [
-          {
-            type: String,
-            ref: "Teacher",
-          },
-        ],
-        isActive: {
-          type: Boolean,
-          default: true,
-        },
-      },
-    ],
+    subjects: {
+      type: [
+        {
+          subjectId: String,
+          teacherId: String,
+          isActive: Boolean
+        }
+      ],
+      default: []
+    },
     description: {
       type: String,
       trim: true,

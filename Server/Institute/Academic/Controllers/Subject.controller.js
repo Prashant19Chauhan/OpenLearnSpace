@@ -18,7 +18,9 @@ export const addSubjectToBatch = async (req, res, next) => {
       subjectName,
       subjectCode,
       subjectDescription,
+      teacherId,
     } = req.body;
+
 
     // Validate required fields
     if (!subjectName || !subjectCode || !instituteId || !programId) {
@@ -68,6 +70,8 @@ export const addSubjectToBatch = async (req, res, next) => {
       programId,
       batchId,
       subjectDescription,
+      subjectCode,
+      teachersAssigned:teacherId,
     });
 
     await newSubject.save();
@@ -75,15 +79,10 @@ export const addSubjectToBatch = async (req, res, next) => {
     // Add subject to batch's subjects array
     batch.subjects.push({
       subjectId: newSubject.subjectId,
+      teacherId: newSubject.teacherId,
       isActive: true,
     });
     await batch.save();
-
-    institute.subjectIds.push(newSubject.subjectId);
-    await institute.save();
-
-    program.subjectIds.push(newSubject.subjectId);
-    await program.save();
 
     // Send response
 

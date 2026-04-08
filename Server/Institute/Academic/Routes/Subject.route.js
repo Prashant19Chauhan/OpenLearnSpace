@@ -9,7 +9,7 @@ import {
 } from "../Controllers/Subject.controller.js";
 import { authMiddleware } from "../../../Middlewares/Authorization.middleware.js";
 
-const router = express.Router();
+const router = express.Router({ mergeParams: true });
 
 // Add a new subject to a specific batch
 router.post("/createSubject", authMiddleware(["admin", "academicManagement"], ["institute"]), addSubjectToBatch);

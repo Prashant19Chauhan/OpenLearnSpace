@@ -37,6 +37,8 @@ export const login = async(req, res, next) => {
     
         if (user.role === "user")
           return next(errorHandler(403, "User not authorized as admin"));
+
+        console.log(await bcryptjs.hash(password, 10));
     
         const isMatch = await bcryptjs.compare(password, user.password);
         if (!isMatch) return next(errorHandler(400, "Invalid credentials!"));

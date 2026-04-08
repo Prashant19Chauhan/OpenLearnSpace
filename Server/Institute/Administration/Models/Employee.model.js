@@ -17,27 +17,21 @@ const employeeSchema = new mongoose.Schema(
       },
       gender: {
         type: String,
-        required: true,
       },
       DOB: {
         type: Date,
-        required: true,
       },
       nationality: {
         type: String,
-        required: true,
       },
       maritalStatus: {
         type: String,
-        required: true,
       },
       permanentAddress: {
         type: String,
-        required: true,
       },
       currentAddress: {
         type: String,
-        required: true,
       },
       phoneNumber: {
         type: String,
@@ -50,28 +44,22 @@ const employeeSchema = new mongoose.Schema(
       },
       imagePath: {
         type: String,
-        required: true,
       },
       department: {
         type: String,
-        required: true,
       },
       designation: {
         type: String,
-        required: true,
       },
       joiningDate: {
         type: Date,
-        required: true,
       },
       employmentType: {
         type: String,
         enum: ["fullTime", "partTime"],
-        required: true,
       },
       supervisor: {
         type: String,
-        required: true,
       },
       role: {
         type: String,
@@ -80,7 +68,6 @@ const employeeSchema = new mongoose.Schema(
       },
       educationQualification: {
         type: String,
-        required: true,
       },
       password: {
         type: String,

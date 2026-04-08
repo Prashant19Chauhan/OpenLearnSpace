@@ -61,6 +61,7 @@ export const getBatchDetails = async (programId, batchId) => {
 };
 
 export const createSubject = async (data, batchId, programId) => {
+  console.log(batchId)
   try {
     const response = await api.post(
       `${API_URL}/${programId}/batch/${batchId}/subject/createSubject`,

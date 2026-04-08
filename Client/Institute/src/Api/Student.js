@@ -4,6 +4,7 @@ const API_URL = '/api/institute/student';
 
 export const addStudent = async (data) => {
   try {
+    console.log(data)
     const response = await api.post(`${API_URL}/enroll`, data, {
       headers: {
         'Content-Type': 'multipart/form-data',
