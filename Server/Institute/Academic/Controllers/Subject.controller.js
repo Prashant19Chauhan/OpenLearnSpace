@@ -4,6 +4,7 @@ import { errorHandler } from "../../../Utils/Error.js";
 import { nanoid } from "nanoid";
 import InstituteModel from "../../Administration/Models/Institute.model.js";
 import ProgramModel from "../Models/Program.model.js";
+import TeacherModel from "../../Teacher/Models/Teacher.model.js"
 
 /**
  * Add a new subject to a specific batch

@@ -50,6 +50,9 @@ import instituteRoute_Employee from "./Institute/Administration/Routes/Employee.
 
 app.use("/api/institute/auth", instituteRoute_Auth)
 app.use("/api/institute/teacher", instituteRoute_Teacher)
+
+app.use("/api/demo/teacherlist", instituteRoute_Teacher);
+
 app.use("/api/institute/student", instituteRoute_Student)
 app.use("/api/institute/employee", instituteRoute_Employee)
 

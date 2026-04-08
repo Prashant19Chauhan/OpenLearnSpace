@@ -101,8 +101,6 @@ export const enrollStudent = async(req, res, next) => {
             batchIds: [batchId],
         });
 
-        console.log(demo)
-
         await newStudent.save();
 
         // If parent doesn't exist, create new parent

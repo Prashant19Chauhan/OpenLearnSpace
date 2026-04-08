@@ -1,6 +1,10 @@
 import React from 'react'
+import useForm from "../hooks/useForm.jsx";
+import useListHandler from '../hooks/useListHandler.jsx';
 
 function Login() {
+  const [response, handleFormData] =  useForm();
+  const [data, getList] = useListHandler();
   return (
     <div className="h-screen flex">
       {/* Left Section */}
@@ -37,6 +41,9 @@ function Login() {
               </label>
               <input
                 type="email"
+                name="email"
+                id='email'
+                onChange={(e)=>handleFormData(e)}
                 placeholder="user@example.com"
                 className="w-full rounded-full border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-400"
               />
@@ -49,6 +56,9 @@ function Login() {
               </label>
               <input
                 type="password"
+                name='password'
+                id='password'
+                onChange={(e)=>handleFormData(e)}
                 placeholder="••••••••"
                 className="w-full rounded-full border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-400"
               />
@@ -67,8 +77,17 @@ function Login() {
           <p className="mt-4 text-sm text-gray-600 text-center cursor-pointer hover:underline">
             Forgot your password?
           </p>
+          {response?<p>{response}</p>:null}
         </div>
-      </div>
+          <div>
+            <button onClick={()=>getList()}>Show All Teacher List</button>
+            {
+              data?.data.map((value)=>{
+                return <li key={value._id}>{value.name}</li>
+              })
+            }
+          </div>
+        </div>
     </div>
   )
 }
