@@ -51,8 +51,6 @@ import instituteRoute_Employee from "./Institute/Administration/Routes/Employee.
 app.use("/api/institute/auth", instituteRoute_Auth)
 app.use("/api/institute/teacher", instituteRoute_Teacher)
 
-app.use("/api/demo/teacherlist", instituteRoute_Teacher);
-
 app.use("/api/institute/student", instituteRoute_Student)
 app.use("/api/institute/employee", instituteRoute_Employee)
 
@@ -97,22 +95,26 @@ import studentRoute_Auth from "./Student/Routes/Auth.route.js";
 import studentRoute_Program from "./Student/Routes/Program.route.js";
 import studentRoute_Finance from "./Student/Routes/Finance.route.js";
 import studentRoute_Communication from "./Student/Routes/Communication.route.js";
+import studentRoute_Content from "./Student/Routes/Content.routes.js"
 
 app.use("/api/student/auth", studentRoute_Auth);
 app.use("/api/student/program", studentRoute_Program);
 app.use("/api/student/finance", studentRoute_Finance);
 app.use("/api/student/communication", studentRoute_Communication);
+app.use("/api/student/content", studentRoute_Content);
 
   //Teacher-Dashboard Route
 import teacherRoute_Auth from "./Teacher/Routes/Auth.route.js"
 import teacherRoute_Finance from  "./Teacher/Routes/Finance.route.js"
 import teacherRoute_Communication from "./Teacher/Routes/Communication.route.js"
 import teacharRoute_Program from "./Teacher/Routes/Program.route.js"
+import teacherRoute_Content from "./Teacher/Routes/Content.routes.js"
 
 app.use("/api/teacher/auth", teacherRoute_Auth);
 app.use("/api/teacher/finance", teacherRoute_Finance);
 app.use("/api/teacher/communication", teacherRoute_Communication);
 app.use("/api/teacher/program", teacharRoute_Program);
+app.use("/api/teacher/content", teacherRoute_Content)
 
 app.get('/', (req, res) => {
   res.send('Hello World!')

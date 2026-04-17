@@ -7,6 +7,7 @@ import {
   FaCog, 
   FaSignOutAlt 
 } from "react-icons/fa";
+import { NavLink } from "react-router-dom";
 
 const Sidebar = ({ active, setActive }) => {
   // Utility function to apply active styles
@@ -19,52 +20,64 @@ const Sidebar = ({ active, setActive }) => {
     <div className="h-screen w-20 bg-white shadow-md flex flex-col justify-between fixed left-0 top-0">
       <div className="flex flex-col space-y-6 mt-6">
         {/* Overview */}
-        <button
-          onClick={() => setActive("overview")}
-          className={getButtonClass("overview")}
-        >
-          <FaChalkboardTeacher className="text-xl" />
-        </button>
+        <NavLink to={'/'}>
+          <button
+            onClick={() => setActive("overview")}
+            className={getButtonClass("overview")}
+          >
+            <FaChalkboardTeacher className="text-xl" />
+          </button>
+        </NavLink>
 
         {/* Academics */}
-        <button
-          onClick={() => setActive("academics")}
-          className={getButtonClass("academics")}
-        >
-          <FaBook className="text-xl" />
-        </button>
+        <NavLink to={'/academics'}>
+          <button
+            onClick={() => setActive("academics")}
+            className={getButtonClass("academics")}
+          >
+            <FaBook className="text-xl" />
+          </button>
+        </NavLink>
 
         {/* Communication */}
-        <button
-          onClick={() => setActive("communication")}
-          className={getButtonClass("communication")}
-        >
-          <FaComments className="text-xl" />
-        </button>
+        <NavLink to={'/communication'}>
+          <button
+            onClick={() => setActive("communication")}
+            className={getButtonClass("communication")}
+          >
+            <FaComments className="text-xl" />
+          </button>
+        </NavLink>
 
         {/* Salary */}
-        <button
-          onClick={() => setActive("salary")}
-          className={getButtonClass("salary")}
-        >
-          <FaMoneyBillWave className="text-xl" />
-        </button>
+        <NavLink to={'/salary'}>
+          <button
+            onClick={() => setActive("salary")}
+            className={getButtonClass("salary")}
+          >
+            <FaMoneyBillWave className="text-xl" />
+          </button>
+        </NavLink>
 
         {/* Statistics */}
-        <button
-          onClick={() => setActive("statistics")}
-          className={getButtonClass("statistics")}
-        >
-          <FaChartBar className="text-xl" />
-        </button>
+        <NavLink to={'/statistics'}>
+          <button
+            onClick={() => setActive("statistics")}
+            className={getButtonClass("statistics")}
+          >
+            <FaChartBar className="text-xl" />
+          </button>
+        </NavLink>
 
         {/* Settings */}
-        <button
-          onClick={() => setActive("settings")}
-          className={getButtonClass("settings")}
-        >
-          <FaCog className="text-xl" />
-        </button>
+        <NavLink to={'/settings'}>
+          <button
+            onClick={() => setActive("settings")}
+            className={getButtonClass("settings")}
+          >
+            <FaCog className="text-xl" />
+          </button>
+        </NavLink>
       </div>
 
       {/* Logout */}

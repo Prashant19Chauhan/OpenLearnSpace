@@ -3,8 +3,9 @@ import useForm from "../hooks/useForm.jsx";
 import useListHandler from '../hooks/useListHandler.jsx';
 
 function Login() {
-  const [response, handleFormData] =  useForm();
+  const [response, handleFormData, handleSubmit] =  useForm();
   const [data, getList] = useListHandler();
+
   return (
     <div className="h-screen flex">
       {/* Left Section */}
@@ -33,7 +34,7 @@ function Login() {
         {/* Login Form */}
         <div className="max-w-sm w-full mx-auto">
           <h2 className="text-2xl font-bold mb-8">Log in</h2>
-          <form className="space-y-6">
+          <form className="space-y-6" onSubmit={handleSubmit}>
             {/* User ID */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">

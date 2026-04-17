@@ -1,5 +1,6 @@
 import ProgramModel from "../../Institute/Academic/Models/Program.model.js";
 import StudentModel from "../../Institute/Student/Models/Student.model.js";
+import SubjectModel from "../../Institute/Academic/Models/Subject.model.js";
 import BatchModel from "../../Institute/Academic/Models/Batch.model.js";
 import ContentModel from "../../Institute/Content/Models/Content.model.js";
 import ExaminationModel from "../../Institute/Examination/Models/Examination.model.js";
@@ -113,13 +114,14 @@ export const getStudentProgramBatches = async (req, res, next) => {
  */
 export const getBatchSubjects = async (req, res, next) => {
   try {
-    const { batchId } = req.params;
+    const { batchIds } = req.user;
+    const batchId = batchIds?.[0]
 
     // Step 1: Find the batch by batchId
     const batch = await BatchModel.findOne({ batchId });
 
     if (!batch) {
-      return next(errorHandler(404, "Batch not found"));
+     return next(errorHandler(404, "Batch not found"));
     }
 
     // Step 2: Extract subjectIds from the batch's subjects array
@@ -131,6 +133,7 @@ export const getBatchSubjects = async (req, res, next) => {
 
     // Step 3: Find all subjects in the Subject model
     const subjects = await SubjectModel.find({ subjectId: { $in: subjectIds } });
+    console.log(subjects)
 
     if (subjects.length === 0) {
       return next(errorHandler(404, "No subjects found for this batch"));

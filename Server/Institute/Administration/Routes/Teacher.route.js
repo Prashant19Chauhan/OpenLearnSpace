@@ -18,6 +18,5 @@ router.delete("/resign", resignTeacher)
 router.get("/:teacherId/details", authMiddleware(["admin", "teacherManagement"], ["institute"]), findTeacherDetails)
 router.put("/update", updateTeacherDetails)
 router.get("/all", authMiddleware(["admin", "teacherManagement"], ["institute"]), findAllTeachersDetails)
-router.get("/demo", findAllTeachersDetails)
 
 export default router

@@ -250,8 +250,8 @@ export const updateTeacherDetails = async(req, res, next) => {
 
 export const findAllTeachersDetails = async(req, res, next) => {
     try {
-        const instituteId  = req.user || "INST-qGLjEmoqjohh";
-
+        const { instituteId } = req.user;
+        
         // Validate required fields
         if (!instituteId) {
             return next(errorHandler(400, "Institute ID is required"));

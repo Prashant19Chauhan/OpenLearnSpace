@@ -1,6 +1,7 @@
 import ProgramModel from "../../Institute/Academic/Models/Program.model.js";
 import BatchModel from "../../Institute/Academic/Models/Batch.model.js";
 import StudentModel from "../../Institute/Student/Models/Student.model.js";
+import SubjectModel from "../../Institute/Academic/Models/Subject.model.js"
 import { errorHandler } from "../../Utils/Error.js";
 
 /**
@@ -86,6 +87,7 @@ export const getTeacherBatches = async (req, res, next) => {
 export const getBatchStudents = async (req, res, next) => {
   try {
     const { batchId } = req.params;
+    console.log(batchId)
 
     // Find the batch by ID
     const batch = await BatchModel.findOne({ batchId });
@@ -96,7 +98,7 @@ export const getBatchStudents = async (req, res, next) => {
 
     // Get student details for all students in the batch
     const students = await StudentModel.find({
-      studentId: { $in: batch.studentIds }
+      batchIds: batchId
     });
 
     if (!students.length) {
@@ -122,3 +124,18 @@ export const getBatchStudents = async (req, res, next) => {
     next(errorHandler(500, error.message || "Internal Server Error"));
   }
 };
+
+export const getTeacherSubjects = async(req, res, next) => {
+  try{
+    const {userId} = req.user;
+    const teacherSubjects = await SubjectModel.find({teachersAssigned: userId});
+    console.log(teacherSubjects)
+    res.status(200).json({
+      success: true,
+      message: "fetched teachers subjects",
+      data: teacherSubjects
+    })
+  }catch(error){
+    next(errorHandler(500, error.message || "Internal Server Error"));
+  }
+}

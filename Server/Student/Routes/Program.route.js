@@ -5,6 +5,8 @@ import {
   getBatchSubjects,
   getSubjectComprehensiveDetails // New import
 } from "../Controllers/Program.controller.js";
+import {authMiddleware} from "../../Middlewares/Authorization.middleware.js"
+import { getAssignmentReport, getAssignments } from "../Controllers/Assignment.controller.js";
 
 const router = express.Router();
 
@@ -15,9 +17,19 @@ router.get("/program/:studentId", getStudentProgram);
 router.get("/program/:programId/batches/:studentId", getStudentProgramBatches);
 
 // Get all subjects for a specific batch
-router.get("/batch/:batchId/subjects", getBatchSubjects);
+router.get("/batch/subjects", authMiddleware(["student"], ["student"]), getBatchSubjects);
 
 // Get comprehensive details for a specific subject
 router.get("/subject/:subjectId/details", getSubjectComprehensiveDetails);
+
+router.get(
+  "/:subjectId/assignments",authMiddleware(["student"], ["student"]),
+  getAssignments
+);
+
+router.get(
+  "/assignment/:assignmentId/report/student/:studentId",authMiddleware(["student"], ["student"]),
+  getAssignmentReport
+);
 
 export default router;
