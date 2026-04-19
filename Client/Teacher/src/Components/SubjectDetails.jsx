@@ -57,7 +57,7 @@ function SubjectDetails() {
       case "assignment":
         return <Assignment studentsData={students} batchId={batchId} />;
       case "content":
-        return <ContentTab subjectId={subjectId}/>;
+        return <ContentTab subjectId={subjectId} studentsData={students}/>;
       case "student":
         return <StudentDetailsTab studentsData={students} />;
       default:

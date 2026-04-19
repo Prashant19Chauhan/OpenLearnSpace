@@ -5,6 +5,7 @@ import Assignment from "./modals/Assignment";
 import ContentTab from "./modals/contentTab";
 import Performance from "./modals/Performance";
 import AIMentor from "./modals/AIMentor";
+import { useSelector } from "react-redux";
 //import { getStudentSubjectData } from "../Api/subject";
 
 // Icons
@@ -17,6 +18,7 @@ const icons = {
 };
 
 function SubjectDetails() {
+  const {studentId} = useSelector((state) => state.user.auth.user)
   const { batchId, subjectId } = useParams();
 
   const [activeTab, setActiveTab] = useState("attendance");
@@ -67,10 +69,10 @@ function SubjectDetails() {
         );
 
       case "content":
-        return <ContentTab subjectId={subjectId}/>;
+        return <ContentTab subjectId={subjectId} studentId={studentId}/>;
 
       case "aiMentor":
-        return <AIMentor subjectId={subjectId} />;
+        return <AIMentor subjectId={subjectId} studentId={studentId}/>;
 
       default:
         return null;

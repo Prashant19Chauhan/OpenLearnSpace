@@ -14,6 +14,12 @@ const ResourceSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
+    understandingLevel: {
+        type: String,
+    },
+    completed: {
+      type: Boolean,
+    }
   },
   { _id: false }
 );
@@ -37,6 +43,12 @@ const SubTopicSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    level: {
+        type: String,
+    },
+    score: {
+        type: Number,
+    },
     videos: [ResourceSchema],
     notes: [ResourceSchema],
   },
@@ -58,6 +70,12 @@ const TopicSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    level: {
+        type: String,
+    },
+    score: {
+        type: Number,
+    },
     subTopics: [SubTopicSchema],
   },
   { _id: false }
@@ -74,6 +92,12 @@ const ChapterSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
+    level: {
+        type: String,
+    },
+    score: {
+        type: Number,
+    },
     topics: [TopicSchema],
   },
   { _id: false }
@@ -81,6 +105,10 @@ const ChapterSchema = new mongoose.Schema(
 
 const ContentSchema = new mongoose.Schema(
   {
+    studentId: {
+        type: String,
+        required: true,
+    },
     subjectId: {
         type: String,
         required: true,
@@ -88,12 +116,17 @@ const ContentSchema = new mongoose.Schema(
     syllabusId: {
       type: String,
       required: true,
-      unique: true,
     },
     syllabusName: {
       type: String,
       required: true,
       trim: true,
+    },
+    level: {
+        type: String,
+    },
+    score: {
+        type: Number,
     },
     chapters: [ChapterSchema],
   },
@@ -102,6 +135,6 @@ const ContentSchema = new mongoose.Schema(
   }
 );
 
-const ContentModel = mongoose.model("SubjectContent", ContentSchema);
+const StudentContentModel = mongoose.model("SubjectContentOfStudent", ContentSchema);
 
-export default ContentModel;
+export default StudentContentModel;

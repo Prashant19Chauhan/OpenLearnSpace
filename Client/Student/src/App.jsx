@@ -10,6 +10,7 @@ import Communication from "./Components/Dashboard/Communication";
 import Profile from "./Components/Dashboard/Profile";
 import Salary from "./Components/Dashboard/Salary";
 import Statistics from "./Components/Dashboard/Statistics";
+import Quiz from "./Pages/Quiz";
 
 function App() {
   const queryClient = new QueryClient();
@@ -30,6 +31,7 @@ function App() {
             <Route path="salary" element={<Salary/>}/>
             <Route path="statistics" element={<Statistics/>}/>
             <Route path="/academics/batch/:batchId/subject/:subjectId" element={<SubjectDetails/>}/>
+            <Route path="/quiz/:QuizId" element={<Quiz/>}/>
           </Route>
         </Routes>
       </BrowserRouter>

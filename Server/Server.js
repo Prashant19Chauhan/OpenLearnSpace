@@ -114,7 +114,13 @@ app.use("/api/teacher/auth", teacherRoute_Auth);
 app.use("/api/teacher/finance", teacherRoute_Finance);
 app.use("/api/teacher/communication", teacherRoute_Communication);
 app.use("/api/teacher/program", teacharRoute_Program);
-app.use("/api/teacher/content", teacherRoute_Content)
+app.use("/api/teacher/content", teacherRoute_Content);
+
+import AiRoute_Quiz from "./aiMentor/routes/quiz.route.js"
+import AiRoute_Content from "./aiMentor/routes/content.route.js"
+
+app.use("/api/ai/quiz", AiRoute_Quiz);
+app.use("/api/ai/content", AiRoute_Content);
 
 app.get('/', (req, res) => {
   res.send('Hello World!')

@@ -1,11 +1,12 @@
 import ContentModel from "../../Institute/Academic/Models/content.model.js";
+import StudentContentModel from "../../aiMentor/models/StudentContent.model.js";
 import { v4 as uuidv4 } from "uuid";
 
 // POST /api/content/syllabus
 // Body: { subjectId, syllabusName }
 export const CreateSyllabus = async (req, res, next) => {
   try {
-    const { subjectId, syllabusName } = req.body;
+    const { subjectId, syllabusName, students} = req.body;
 
     if (!subjectId || !syllabusName) {
       return res.status(400).json({
@@ -14,20 +15,26 @@ export const CreateSyllabus = async (req, res, next) => {
       });
     }
 
-    const existing = await ContentModel.findOne({ subjectId });
-    if (existing) {
-      return res.status(409).json({
-        success: false,
-        message: "Syllabus for this subjectId already exists",
-      });
-    }
+    const syllabusId = uuidv4();
 
     const syllabus = await ContentModel.create({
       subjectId,
-      syllabusId: uuidv4(),
+      syllabusId,
       syllabusName,
       chapters: [],
     });
+
+    for (const student of students) {
+      await StudentContentModel.create({
+        studentId: student.studentId,
+        subjectId,
+        syllabusId,
+        syllabusName,
+        level: "Beginner",
+        score: 0,
+        chapters: [],
+      });
+    }
 
     res.status(201).json({
       success: true,
@@ -41,9 +48,10 @@ export const CreateSyllabus = async (req, res, next) => {
 
 // POST /api/content/chapter
 // Body: { syllabusId, chapterName }
+
 export const createChapters = async (req, res, next) => {
   try {
-    const { syllabusId, chapterName } = req.body;
+    const { syllabusId, chapterName, students } = req.body;
 
     if (!syllabusId || !chapterName) {
       return res.status(400).json({
@@ -53,6 +61,7 @@ export const createChapters = async (req, res, next) => {
     }
 
     const syllabus = await ContentModel.findOne({ syllabusId });
+
     if (!syllabus) {
       return res.status(404).json({
         success: false,
@@ -62,23 +71,46 @@ export const createChapters = async (req, res, next) => {
 
     const chapterId = uuidv4();
 
-    syllabus.chapters.push({
+    const chapterData = {
       chapterId,
       chapterName,
       topics: [],
-      videos: [],
-      notes: [],
-    });
+    };
 
+    // Add to Master Content
+    syllabus.chapters.push(chapterData);
     await syllabus.save();
 
-    const newChapter = syllabus.chapters.find((c) => c.chapterId === chapterId);
+    // Add Chapter to Each Student
+    if (students && students.length > 0) {
+      await Promise.all(
+        students.map((student) =>
+          StudentContentModel.updateOne(
+            {
+              studentId: student.studentId,
+              syllabusId,
+            },
+            {
+              $push: {
+                chapters: {
+                  ...chapterData,
+                  level: "Beginner",
+                  score: 0,
+                  topics: [],
+                },
+              },
+            }
+          )
+        )
+      );
+    }
 
     res.status(201).json({
       success: true,
       message: "Chapter created successfully",
-      data: newChapter,
+      data: chapterData,
     });
+
   } catch (error) {
     next(error);
   }
@@ -98,6 +130,7 @@ export const createTopics = async (req, res, next) => {
     }
 
     const syllabus = await ContentModel.findOne({ syllabusId });
+
     if (!syllabus) {
       return res.status(404).json({
         success: false,
@@ -105,7 +138,10 @@ export const createTopics = async (req, res, next) => {
       });
     }
 
-    const chapter = syllabus.chapters.find((c) => c.chapterId === chapterId);
+    const chapter = syllabus.chapters.find(
+      (c) => c.chapterId === chapterId
+    );
+
     if (!chapter) {
       return res.status(404).json({
         success: false,
@@ -115,29 +151,50 @@ export const createTopics = async (req, res, next) => {
 
     const topicId = uuidv4();
 
-    chapter.topics.push({
+    const topicData = {
       topicId,
       topicName,
       chapterId,
       subTopics: [],
       videos: [],
       notes: [],
-    });
+    };
+
+    // Add to Master Content
+    chapter.topics.push(topicData);
 
     await syllabus.save();
 
-    const newTopic = chapter.topics.find((t) => t.topicId === topicId);
+    // Add Topic to All Students
+    await StudentContentModel.updateMany(
+      {
+        syllabusId,
+      },
+      {
+        $push: {
+          "chapters.$[chapter].topics": {
+            ...topicData,
+            level: "Beginner",
+            score: 0,
+            subTopics: [],
+          },
+        },
+      },
+      {
+        arrayFilters: [{ "chapter.chapterId": chapterId }],
+      }
+    );
 
     res.status(201).json({
       success: true,
       message: "Topic created successfully",
-      data: newTopic,
+      data: topicData,
     });
+
   } catch (error) {
     next(error);
   }
 };
-
 // POST /api/content/subtopic
 // Body: { syllabusId, chapterId, topicId, subTopicName }
 export const createSubTopics = async (req, res, next) => {
@@ -147,11 +204,13 @@ export const createSubTopics = async (req, res, next) => {
     if (!syllabusId || !chapterId || !topicId || !subTopicName) {
       return res.status(400).json({
         success: false,
-        message: "syllabusId, chapterId, topicId, and subTopicName are required",
+        message:
+          "syllabusId, chapterId, topicId, and subTopicName are required",
       });
     }
 
     const syllabus = await ContentModel.findOne({ syllabusId });
+
     if (!syllabus) {
       return res.status(404).json({
         success: false,
@@ -159,7 +218,10 @@ export const createSubTopics = async (req, res, next) => {
       });
     }
 
-    const chapter = syllabus.chapters.find((c) => c.chapterId === chapterId);
+    const chapter = syllabus.chapters.find(
+      (c) => c.chapterId === chapterId
+    );
+
     if (!chapter) {
       return res.status(404).json({
         success: false,
@@ -167,7 +229,10 @@ export const createSubTopics = async (req, res, next) => {
       });
     }
 
-    const topic = chapter.topics.find((t) => t.topicId === topicId);
+    const topic = chapter.topics.find(
+      (t) => t.topicId === topicId
+    );
+
     if (!topic) {
       return res.status(404).json({
         success: false,
@@ -177,24 +242,51 @@ export const createSubTopics = async (req, res, next) => {
 
     const subTopicId = uuidv4();
 
-    topic.subTopics.push({
+    const subTopicData = {
       subTopicId,
       subTopicName,
       chapterId,
       topicId,
       videos: [],
       notes: [],
-    });
+    };
+
+    // Add to Master Content
+    topic.subTopics.push(subTopicData);
 
     await syllabus.save();
 
-    const newSubTopic = topic.subTopics.find((s) => s.subTopicId === subTopicId);
+    // Add to All Students
+    await StudentContentModel.updateMany(
+      {
+        syllabusId,
+      },
+      {
+        $push: {
+          "chapters.$[chapter].topics.$[topic].subTopics": {
+            ...subTopicData,
+            understanding: "Not Started",
+            score: 0,
+            level: "Beginner",
+            videos: [],
+            notes: [],
+          },
+        },
+      },
+      {
+        arrayFilters: [
+          { "chapter.chapterId": chapterId },
+          { "topic.topicId": topicId },
+        ],
+      }
+    );
 
     res.status(201).json({
       success: true,
       message: "SubTopic created successfully",
-      data: newSubTopic,
+      data: subTopicData,
     });
+
   } catch (error) {
     next(error);
   }
@@ -205,7 +297,16 @@ export const createSubTopics = async (req, res, next) => {
 //         chapterId, topicId?, subTopicId?, url, title? }
 export const createNotesVideo = async (req, res, next) => {
   try {
-    const { syllabusId, type, level, chapterId, topicId, subTopicId, url, title } = req.body;
+    const {
+      syllabusId,
+      type,
+      level,
+      chapterId,
+      topicId,
+      subTopicId,
+      url,
+      title
+    } = req.body;
 
     if (!syllabusId || !type || !level || !chapterId || !url) {
       return res.status(400).json({
@@ -229,54 +330,161 @@ export const createNotesVideo = async (req, res, next) => {
     }
 
     const syllabus = await ContentModel.findOne({ syllabusId });
+
     if (!syllabus) {
-      return res.status(404).json({ success: false, message: "Syllabus not found" });
+      return res.status(404).json({
+        success: false,
+        message: "Syllabus not found"
+      });
     }
 
-    const chapter = syllabus.chapters.find((c) => c.chapterId === chapterId);
+    const chapter = syllabus.chapters.find(
+      (c) => c.chapterId === chapterId
+    );
+
     if (!chapter) {
-      return res.status(404).json({ success: false, message: "Chapter not found" });
+      return res.status(404).json({
+        success: false,
+        message: "Chapter not found"
+      });
     }
 
-    const resource = { resourceId: uuidv4(), url, title: title || "" };
+    const resource = {
+      resourceId: uuidv4(),
+      url,
+      title: title || ""
+    };
+
     const field = type === "video" ? "videos" : "notes";
+
+    // ================= MASTER CONTENT =================
 
     if (level === "chapter") {
       chapter[field].push(resource);
-    } else if (level === "topic") {
+    }
+
+    else if (level === "topic") {
+
       if (!topicId) {
-        return res.status(400).json({ success: false, message: "topicId is required for topic level" });
+        return res.status(400).json({
+          success: false,
+          message: "topicId required"
+        });
       }
-      const topic = chapter.topics.find((t) => t.topicId === topicId);
-      if (!topic) {
-        return res.status(404).json({ success: false, message: "Topic not found" });
-      }
+
+      const topic = chapter.topics.find(
+        (t) => t.topicId === topicId
+      );
+
       topic[field].push(resource);
-    } else if (level === "subtopic") {
+    }
+
+    else if (level === "subtopic") {
+
       if (!topicId || !subTopicId) {
         return res.status(400).json({
           success: false,
-          message: "topicId and subTopicId are required for subtopic level",
+          message: "topicId and subTopicId required"
         });
       }
-      const topic = chapter.topics.find((t) => t.topicId === topicId);
-      if (!topic) {
-        return res.status(404).json({ success: false, message: "Topic not found" });
-      }
-      const subTopic = topic.subTopics.find((s) => s.subTopicId === subTopicId);
-      if (!subTopic) {
-        return res.status(404).json({ success: false, message: "SubTopic not found" });
-      }
+
+      const topic = chapter.topics.find(
+        (t) => t.topicId === topicId
+      );
+
+      const subTopic = topic.subTopics.find(
+        (s) => s.subTopicId === subTopicId
+      );
+
       subTopic[field].push(resource);
     }
 
     await syllabus.save();
 
+
+    // ================= STUDENT CONTENT =================
+
+    // CHAPTER LEVEL
+    if (level === "chapter") {
+
+      await StudentContentModel.updateMany(
+        { syllabusId },
+        {
+          $push: {
+            [`chapters.$[chapter].${field}`]: {
+              ...resource,
+              completed: false,
+              understanding: "Not Started"
+            }
+          }
+        },
+        {
+          arrayFilters: [
+            { "chapter.chapterId": chapterId }
+          ]
+        }
+      );
+
+    }
+
+
+    // TOPIC LEVEL
+    else if (level === "topic") {
+
+      await StudentContentModel.updateMany(
+        { syllabusId },
+        {
+          $push: {
+            [`chapters.$[chapter].topics.$[topic].${field}`]: {
+              ...resource,
+              completed: false,
+              understanding: "Not Started"
+            }
+          }
+        },
+        {
+          arrayFilters: [
+            { "chapter.chapterId": chapterId },
+            { "topic.topicId": topicId }
+          ]
+        }
+      );
+
+    }
+
+
+    // SUBTOPIC LEVEL
+    else if (level === "subtopic") {
+
+      await StudentContentModel.updateMany(
+        { syllabusId },
+        {
+          $push: {
+            [`chapters.$[chapter].topics.$[topic].subTopics.$[sub].${field}`]: {
+              ...resource,
+              completed: false,
+              understandingLevel: "Not Started"
+            }
+          }
+        },
+        {
+          arrayFilters: [
+            { "chapter.chapterId": chapterId },
+            { "topic.topicId": topicId },
+            { "sub.subTopicId": subTopicId }
+          ]
+        }
+      );
+
+    }
+
+
     res.status(201).json({
       success: true,
       message: `${type === "video" ? "Video" : "Note"} added successfully`,
-      data: resource,
+      data: resource
     });
+
   } catch (error) {
     next(error);
   }

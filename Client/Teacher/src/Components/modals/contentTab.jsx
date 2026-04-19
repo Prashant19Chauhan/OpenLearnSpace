@@ -3,13 +3,15 @@ import api from "../../Api/Api";
 
 const API_URL = "/api/teacher/content";
 
-function ContentTab({subjectId}) {
+function ContentTab({subjectId, studentsData}) {
   const [syllabus, setSyllabus] = useState([]);
   const [syllabusName, setSyllabusName] = useState("");
 
   const fetchSyllabusData = async () => {
     try {
-      const response = await api.get(API_URL);
+      const response = await api.get(API_URL, {
+        params: { subjectId }
+      });
       if (response.data.success) {
         setSyllabus(response.data.data);
       }
@@ -30,8 +32,10 @@ function ContentTab({subjectId}) {
   const addSyllabus = async () => {
     if (!syllabusName) return;;
     if (!subjectId) return;
+    const students = studentsData?.students
+    console.log(students)
     try {
-      const response = await api.post(`${API_URL}/syllabus`, { subjectId, syllabusName });
+      const response = await api.post(`${API_URL}/syllabus`, { subjectId, syllabusName, students});
       if (response.data.success) {
         setSyllabusName("");
         fetchSyllabusData();
@@ -43,24 +47,27 @@ function ContentTab({subjectId}) {
 
   const addChapter = async (syllabusId) => {
     const chapterName = prompt("Enter Chapter Name");
+    const students = studentsData?.students
     if (chapterName) {
-      await api.post(`${API_URL}/chapter`, { syllabusId, chapterName });
+      await api.post(`${API_URL}/chapter`, { syllabusId, chapterName, students });
       fetchSyllabusData();
     }
   };
 
   const addTopic = async (syllabusId, chapterId) => {
     const topicName = prompt("Enter Topic Name");
+    const students = studentsData?.students
     if (topicName) {
-      await api.post(`${API_URL}/topic`, { syllabusId, chapterId, topicName });
+      await api.post(`${API_URL}/topic`, { syllabusId, chapterId, topicName, students });
       fetchSyllabusData();
     }
   };
 
   const addSubtopic = async (syllabusId, chapterId, topicId) => {
     const subTopicName = prompt("Enter Subtopic Name");
+    const students = studentsData?.students
     if (subTopicName) {
-      await api.post(`${API_URL}/subtopic`, { syllabusId, chapterId, topicId, subTopicName });
+      await api.post(`${API_URL}/subtopic`, { syllabusId, chapterId, topicId, subTopicName, students });
       fetchSyllabusData();
     }
   };
@@ -68,9 +75,10 @@ function ContentTab({subjectId}) {
   const addContent = async (syllabusId, chapterId, topicId, subTopicId, type) => {
     const title = prompt(`Enter ${type === "video" ? "Video" : "Notes"} Title`);
     const url = prompt(`Enter URL`);
+    const students = studentsData?.students
     if (title && url) {
       await api.post(`${API_URL}/resource`, {
-        syllabusId, type, level: "subtopic", chapterId, topicId, subTopicId, url, title,
+        syllabusId, type, level: "subtopic", chapterId, topicId, subTopicId, url, title, students,
       });
       fetchSyllabusData();
     }
